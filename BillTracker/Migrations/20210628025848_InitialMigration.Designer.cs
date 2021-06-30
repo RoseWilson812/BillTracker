@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BillTracker.Migrations
 {
     [DbContext(typeof(BillDbContext))]
-    [Migration("20210612022630_InitialMigration")]
+    [Migration("20210628025848_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,17 +28,17 @@ namespace BillTracker.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<string>("Category")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("DueDate")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Memo")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("PaidDate")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<DateTime?>("PaidDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Payee")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -52,13 +52,13 @@ namespace BillTracker.Migrations
                     b.ToTable("Bills");
                 });
 
-            modelBuilder.Entity("BillTracker.Models.Category", b =>
+            modelBuilder.Entity("BillTracker.Models.BillCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("BillCategory")
+                    b.Property<string>("CategoryName")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
@@ -100,12 +100,12 @@ namespace BillTracker.Migrations
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("BillCategoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("MemberId", "CategoryId");
+                    b.HasKey("MemberId", "BillCategoryId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("BillCategoryId");
 
                     b.ToTable("MemberCategorys");
                 });
@@ -249,10 +249,12 @@ namespace BillTracker.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -289,10 +291,12 @@ namespace BillTracker.Migrations
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(128) CHARACTER SET utf8mb4")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -319,9 +323,9 @@ namespace BillTracker.Migrations
 
             modelBuilder.Entity("BillTracker.Models.MemberCategory", b =>
                 {
-                    b.HasOne("BillTracker.Models.Category", "Category")
+                    b.HasOne("BillTracker.Models.BillCategory", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("BillCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

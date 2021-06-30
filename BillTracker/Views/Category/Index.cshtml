@@ -1,0 +1,13 @@
+﻿@model BillTracker.ViewModels.AddCategoryViewModel;
+
+<h2>Add New Category</h2>
+<br />
+ 
+<form asp-controller="Category" asp-action="Add" method="post">
+    <div class="form-group">
+        <label asp-for="CategoryName">Category</label>
+        <input asp-for="CategoryName" />
+        <span asp-validation-for="CategoryName"></span>
+    </div>
+    <input type="submit" value="Save Category" />
+</form>

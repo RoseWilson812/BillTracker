@@ -53,11 +53,11 @@ namespace BillTracker.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    DueDate = table.Column<string>(nullable: true),
-                    PaidDate = table.Column<string>(nullable: true),
+                    DueDate = table.Column<DateTime>(nullable: false),
+                    PaidDate = table.Column<DateTime>(nullable: true),
                     Payee = table.Column<string>(nullable: true),
                     Amount = table.Column<decimal>(nullable: false),
-                    Category = table.Column<string>(nullable: true),
+                    CategoryId = table.Column<int>(nullable: false),
                     Memo = table.Column<string>(nullable: true),
                     TaxDeductible = table.Column<string>(nullable: false)
                 },
@@ -72,7 +72,7 @@ namespace BillTracker.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    BillCategory = table.Column<string>(nullable: true)
+                    CategoryName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -138,8 +138,8 @@ namespace BillTracker.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(nullable: false),
-                    ProviderKey = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -183,8 +183,8 @@ namespace BillTracker.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -227,14 +227,14 @@ namespace BillTracker.Migrations
                 columns: table => new
                 {
                     MemberId = table.Column<int>(nullable: false),
-                    CategoryId = table.Column<int>(nullable: false)
+                    BillCategoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MemberCategorys", x => new { x.MemberId, x.CategoryId });
+                    table.PrimaryKey("PK_MemberCategorys", x => new { x.MemberId, x.BillCategoryId });
                     table.ForeignKey(
-                        name: "FK_MemberCategorys_Categorys_CategoryId",
-                        column: x => x.CategoryId,
+                        name: "FK_MemberCategorys_Categorys_BillCategoryId",
+                        column: x => x.BillCategoryId,
                         principalTable: "Categorys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -289,9 +289,9 @@ namespace BillTracker.Migrations
                 column: "BillId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MemberCategorys_CategoryId",
+                name: "IX_MemberCategorys_BillCategoryId",
                 table: "MemberCategorys",
-                column: "CategoryId");
+                column: "BillCategoryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

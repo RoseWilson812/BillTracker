@@ -1,0 +1,52 @@
+﻿@model BillTracker.ViewModels.EditBillViewModel;
+
+<h2>Edit Bill</h2>
+<br />
+<a class="btn btn-primary btn-sm active" asp-area="" asp-controller="Category" asp-action="Index" role="button">Add Category</a>
+<br />
+<br />
+<form asp-controller="Home" asp-action="UpdateBill" method="post">
+    <div>
+        <label asp-for="DueDate">Due Date</label>
+        <input asp-for="DueDate" />
+        <span asp-validation-for="DueDate"></span>
+    </div>
+    <div>
+        <label asp-for="PaidDate">Paid Date</label>
+        <input asp-for="PaidDate" />
+        <span asp-validation-for="PaidDate"></span>
+    </div>
+    <div>
+        <label asp-for="Payee">Payee</label>
+        <input asp-for="Payee" />
+        <span asp-validation-for="Payee"></span>
+    </div>
+    <div>
+        <label asp-for="Amount">Amount</label>
+        <input asp-for="Amount" />
+        <span asp-validation-for="Amount"></span>
+    </div>
+    <div>
+        <label asp-for="CategoryId">Category</label>
+        <select asp-for="CategoryId" asp-items="Model.PossibleCategories"></select>
+        <span asp-validation-for="CategoryId"></span>
+    </div>
+
+    <div>
+        <label asp-for="Memo">Memo</label>
+        <input asp-for="Memo" />
+        <span asp-validation-for="Memo"></span>
+    </div>
+    <div>
+        <label asp-for="TaxDeductible">Tax Deductible</label>
+        <input asp-for="TaxDeductible" />
+        <span asp-validation-for="TaxDeductible"></span>
+    </div>
+    <div class="row form-group">
+       
+            @Html.HiddenFor(model => model.Id)
+       
+    </div>
+
+    <input type="submit" value="Save Bill" />
+</form>

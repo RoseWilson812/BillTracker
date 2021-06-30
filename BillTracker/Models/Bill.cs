@@ -8,24 +8,24 @@ namespace BillTracker.Models
     public class Bill
     {
         public int Id { get; set; }
-        public string DueDate { get; set; }
-        public string PaidDate { get; set; }
+        public DateTime DueDate { get; set; }
+        public DateTime? PaidDate { get; set; }
         public string Payee { get; set; }
         public decimal Amount { get; set; }
-        public string Category { get; set; }
+        public int CategoryId { get; set; }
         public string Memo { get; set; }
         public char TaxDeductible { get; set; }
 
         public Bill()
         {
         }
-        public Bill(string dueDate, string paidDate, string payee, decimal amount, string category, string memo, char taxDeductible)
+        public Bill(DateTime dueDate, DateTime paidDate, string payee, decimal amount, int categoryId, string memo, char taxDeductible)
         {
             DueDate = dueDate;
             PaidDate = paidDate;
             Payee = payee;
             Amount = amount;
-            Category = category;
+            CategoryId = categoryId;
             Memo = memo;
             TaxDeductible = taxDeductible;
         }

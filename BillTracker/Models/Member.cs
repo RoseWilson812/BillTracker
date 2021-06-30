@@ -16,10 +16,14 @@ namespace BillTracker.Models
         {
             UserId = userId;
         }
+        public override string ToString()
+        {
+            return UserId;
+        }
         public override bool Equals(object obj)
         {
-            return obj is Member @member &&
-                Id == member.Id;
+            return obj is Member @user &&
+                Id == user.Id;
         }
         public override int GetHashCode()
         {

@@ -12,7 +12,7 @@ namespace BillTracker.Data
     public class BillDbContext : IdentityDbContext<IdentityUser>
     {
         public DbSet<Bill> Bills { get; set; }
-        public DbSet<Category> Categorys { get; set; }
+        public DbSet<BillCategory> Categorys { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<MemberBill> MemberBills { get; set; }
         public DbSet<MemberCategory> MemberCategorys { get; set; }
@@ -25,9 +25,9 @@ namespace BillTracker.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<MemberBill>()
-               .HasKey(j => new { j.MemberId, j.BillId });
+               .HasKey(mb => new { mb.MemberId, mb.BillId });
             modelBuilder.Entity<MemberCategory>()
-             .HasKey(j => new { j.MemberId, j.CategoryId });
+             .HasKey(mc => new { mc.MemberId, mc.BillCategoryId });
 
 
 
