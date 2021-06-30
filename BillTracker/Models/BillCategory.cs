@@ -5,22 +5,22 @@ using System.Threading.Tasks;
 
 namespace BillTracker.Models
 {
-    public class Category
+    public class BillCategory
     {
         public int Id { get; set; }
-        public string BillCategory { get; set; }
+        public string CategoryName { get; set; }
 
-        public Category()
+        public BillCategory()
         {
         }
-        public Category(string billCategory)
+        public BillCategory(string categoryName)
         {
-            BillCategory = billCategory;
+            CategoryName = categoryName;
         }
         public override bool Equals(object obj)
         {
-            return obj is Category @category &&
-                Id == category.Id;
+            return obj is BillCategory @billCategory &&
+                Id == billCategory.Id;
         }
         public override int GetHashCode()
         {
