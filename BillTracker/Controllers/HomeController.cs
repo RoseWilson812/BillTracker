@@ -67,24 +67,25 @@ namespace BillTracker.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddBill(AddBillViewModel prioAddBillViewModel)
+        public IActionResult AddBill()
         {
-           DateTime dateToDisplay = DateTime.Now;
-        
-         //  string dateToDisplay = String.Format("{0:MM/dd/yy}", dateTime);
 
+            List<BillCategory> categories = context.Categorys.ToList();
+             ClaimsPrincipal currentUser = this.User;
+            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            List<Member> saveMember = context.Members
+                .Where(m => m.UserId == currentUserId).ToList();
 
-
-          List<BillCategory> categories = context.Categorys.ToList();
             if (categories.Count == 0)
             {
                 ViewBag.message = "At least 1 Category must be created before adding any bills";
                 return View();
             }
             ViewBag.message = "";
-            AddBillViewModel addBillViewModel = new AddBillViewModel(categories, AddBillViewModel.Member); //dateToDisplay);
-            //AddBillViewModel.SaveMemberId = priorAddBillViewModel.saveMemberId;
+            AddBillViewModel addBillViewModel = new AddBillViewModel(categories, saveMember[0]);
+           
             return View(addBillViewModel);
+          
         }
 
         [HttpPost]
@@ -95,7 +96,7 @@ namespace BillTracker.Controllers
             if (ModelState.IsValid)
             {
 
-               
+                bill.TaxDeductible = Char.ToUpper(addBillViewModel.TaxDeductible);
                 bill.Amount = decimal.Round(bill.Amount, 2);
                 context.Bills.Add(bill);
                
@@ -128,12 +129,10 @@ namespace BillTracker.Controllers
         public IActionResult EditBill(int id)
         {
             List<BillCategory> categories = context.Categorys.ToList();
-            //   List<Bill> editBill = new List<Bill>();
+            
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-      //      List<Member> saveMember = context.Members
-      //          .Where(m => m.UserId == currentUserId).ToList();
-                 
+                      
             List<Bill> editBill = context.Bills
                     .Where(b => b.Id == id)
                     .ToList();
@@ -167,12 +166,12 @@ namespace BillTracker.Controllers
                 oldBill.Memo = editBillViewModel.Memo;
                 oldBill.CategoryId = editBillViewModel.CategoryId;
                 oldBill.Amount = editBillViewModel.Amount;
-                oldBill.TaxDeductible = editBillViewModel.TaxDeductible;
+                oldBill.TaxDeductible = Char.ToUpper(editBillViewModel.TaxDeductible);
                 context.Bills.Update(oldBill);
                 context.SaveChanges();
                 ViewBag.message = "";
                 editBillViewModel.CreateDropdown();
-                //AddBillViewModel.SaveMemberId = priorAddBillViewModel.saveMemberId;
+               
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -183,9 +182,58 @@ namespace BillTracker.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("/Home/DeleteBill/{id}")]
+        public IActionResult DeleteBill(int id)
+        {
+            List<BillCategory> categories = context.Categorys.ToList();
+
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            List<Member> saveMember = context.Members
+                .Where(m => m.UserId == currentUserId).ToList();
+
+            List<Bill> editBill = context.Bills
+                    .Where(b => b.Id == id)
+                    .ToList();
+            DeleteBillViewModel deleteBillViewModel = new DeleteBillViewModel(
+                editBill[0].Id,
+                editBill[0].DueDate,
+                editBill[0].PaidDate,
+                editBill[0].Payee,
+                editBill[0].Amount,
+                editBill[0].CategoryId,
+                editBill[0].Memo,
+                editBill[0].TaxDeductible,
+                categories,
+                saveMember[0]
+                );
+
+            ViewBag.message = "";
+            deleteBillViewModel.CreateDropdown();
+
+            return View(deleteBillViewModel);
+        }
+
+        [HttpPost]
+        [Route("/Home/DeleteBill/{id}")]
+        public IActionResult DeleteRecipe(int id, DeleteBillViewModel deleteBillViewModel)
+        {
+            Bill oldBill = context.Bills.Find(id);
+
+            List<MemberBill> saveMemberBill = context.MemberBills
+                    .Where(mb => mb.MemberId == DeleteBillViewModel.Member.Id && mb.BillId == id).ToList();
+            context.Bills.Remove(oldBill);
+            context.MemberBills.Remove(saveMemberBill[0]);
+            context.SaveChanges();
+
+            return RedirectToAction("Index", "Home");
+        }
 
 
-            public IActionResult Privacy()
+
+
+        public IActionResult Privacy()
         {
             return View();
         }
