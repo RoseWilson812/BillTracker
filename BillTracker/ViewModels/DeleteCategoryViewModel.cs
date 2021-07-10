@@ -7,24 +7,27 @@ using System.Threading.Tasks;
 
 namespace BillTracker.ViewModels
 {
-    public class AddCategoryViewModel
+    public class DeleteCategoryViewModel
     {
-        [Required(ErrorMessage = "Category Name is required!")]
+        
         public string CategoryName { get; set; }
         public static Member Member { get; set; }
         public int Id { get; set; }
+        [Required]
+        public string DeleteCategoryName { get; set; }
 
         public static List<BillCategory> SaveCategorys { get; set; }
-       
         public List<BillCategory> CategoryList { get; set; }
-        public AddCategoryViewModel()
-        {
 
-        }
-        public AddCategoryViewModel(string category)
+        public DeleteCategoryViewModel()
         {
-            CategoryName = category;
         }
-
-    } 
+       
+        public DeleteCategoryViewModel(int id, string deleteCategory)
+        {
+            Id = id;
+            CategoryName = "";
+            DeleteCategoryName = deleteCategory;
+        }
+    }
 }

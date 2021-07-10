@@ -62,15 +62,17 @@ namespace BillTracker.Controllers
             AddBillViewModel addBillViewModel = new AddBillViewModel();
  //           AddBillViewModel.SaveMemberId = saveMember[0].Id;
             AddBillViewModel.Member = saveMember[0];
-            addBillViewModel.SaveBills = allBills.GetRange(0, allBills.Count);
+            
+            addBillViewModel.SaveBills = allBills.OrderBy(bill => bill.DueDate).ToList(); 
+      //      addBillViewModel.SaveBills = allBills.GetRange(0, allBills.Count);
             return View(addBillViewModel);
         }
 
-        [HttpGet]
+        [HttpGet] 
         public IActionResult AddBill()
         {
 
-            List<BillCategory> categories = context.Categorys.ToList();
+            List<BillCategory> categories = context.Categorys.OrderBy(category => category.CategoryName).ToList();
              ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             List<Member> saveMember = context.Members
