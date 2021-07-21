@@ -199,6 +199,37 @@ namespace BillTracker.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CategoryBills",
+                columns: table => new
+                {
+                    MemberId = table.Column<int>(nullable: false),
+                    CategoryId = table.Column<int>(nullable: false),
+                    BillId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryBills", x => new { x.MemberId, x.CategoryId });
+                    table.ForeignKey(
+                        name: "FK_CategoryBills_Bills_BillId",
+                        column: x => x.BillId,
+                        principalTable: "Bills",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoryBills_Categorys_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categorys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoryBills_Members_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "Members",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MemberBills",
                 columns: table => new
                 {
@@ -227,14 +258,14 @@ namespace BillTracker.Migrations
                 columns: table => new
                 {
                     MemberId = table.Column<int>(nullable: false),
-                    BillCategoryId = table.Column<int>(nullable: false)
+                    CategoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MemberCategorys", x => new { x.MemberId, x.BillCategoryId });
+                    table.PrimaryKey("PK_MemberCategorys", x => new { x.MemberId, x.CategoryId });
                     table.ForeignKey(
-                        name: "FK_MemberCategorys_Categorys_BillCategoryId",
-                        column: x => x.BillCategoryId,
+                        name: "FK_MemberCategorys_Categorys_CategoryId",
+                        column: x => x.CategoryId,
                         principalTable: "Categorys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -284,14 +315,24 @@ namespace BillTracker.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CategoryBills_BillId",
+                table: "CategoryBills",
+                column: "BillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryBills_CategoryId",
+                table: "CategoryBills",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MemberBills_BillId",
                 table: "MemberBills",
                 column: "BillId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MemberCategorys_BillCategoryId",
+                name: "IX_MemberCategorys_CategoryId",
                 table: "MemberCategorys",
-                column: "BillCategoryId");
+                column: "CategoryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -310,6 +351,9 @@ namespace BillTracker.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "CategoryBills");
 
             migrationBuilder.DropTable(
                 name: "MemberBills");

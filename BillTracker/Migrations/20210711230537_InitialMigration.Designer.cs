@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BillTracker.Migrations
 {
     [DbContext(typeof(BillDbContext))]
-    [Migration("20210628025848_InitialMigration")]
+    [Migration("20210711230537_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,7 @@ namespace BillTracker.Migrations
                     b.ToTable("Bills");
                 });
 
-            modelBuilder.Entity("BillTracker.Models.BillCategory", b =>
+            modelBuilder.Entity("BillTracker.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,6 +64,26 @@ namespace BillTracker.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categorys");
+                });
+
+            modelBuilder.Entity("BillTracker.Models.CategoryBill", b =>
+                {
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BillId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MemberId", "CategoryId");
+
+                    b.HasIndex("BillId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CategoryBills");
                 });
 
             modelBuilder.Entity("BillTracker.Models.Member", b =>
@@ -100,12 +120,12 @@ namespace BillTracker.Migrations
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BillCategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("MemberId", "BillCategoryId");
+                    b.HasKey("MemberId", "CategoryId");
 
-                    b.HasIndex("BillCategoryId");
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("MemberCategorys");
                 });
@@ -306,6 +326,27 @@ namespace BillTracker.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("BillTracker.Models.CategoryBill", b =>
+                {
+                    b.HasOne("BillTracker.Models.Bill", "Bill")
+                        .WithMany()
+                        .HasForeignKey("BillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BillTracker.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BillTracker.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BillTracker.Models.MemberBill", b =>
                 {
                     b.HasOne("BillTracker.Models.Bill", "Bill")
@@ -323,9 +364,9 @@ namespace BillTracker.Migrations
 
             modelBuilder.Entity("BillTracker.Models.MemberCategory", b =>
                 {
-                    b.HasOne("BillTracker.Models.BillCategory", "Category")
+                    b.HasOne("BillTracker.Models.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("BillCategoryId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -9,10 +9,11 @@
 else
 {
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-
+   <div>
     <a class="btn btn-primary btn-sm active" asp-area="" asp-controller="Home" asp-action="AddBill" role="button">Add Bills</a>
     <a class="btn btn-primary btn-sm active" asp-area="" asp-controller="Category" asp-action="Index" role="button">Add Category</a>
-    <div class="table-wrapper">
+    </div>
+       <div class="table-wrapper">
     <table class="table table-striped table-bordered table-sm">
         <thead>
             <tr>
@@ -66,7 +67,7 @@ else
 
                     }
                     <td>@bill.Payee</td>
-                    <td>@bill.CategoryId</td>
+                    <td>@bill.CategoryName</td>
                     <td>@bill.Memo</td>
                     <td>@bill.Amount</td>
                     <td>@bill.TaxDeductible</td>

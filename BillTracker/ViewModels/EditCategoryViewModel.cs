@@ -16,8 +16,8 @@ namespace BillTracker.ViewModels
         [Required(ErrorMessage = "Category Name cannot be blank!")]
         public string EditCategoryName { get; set; }
         
-        public static List<BillCategory> SaveCategorys { get; set; }
-        public List<BillCategory> CategoryList { get; set; }
+        public static List<Category> SaveCategorys { get; set; }
+        public List<Category> CategoryList { get; set; }
       
         public EditCategoryViewModel()
         {
