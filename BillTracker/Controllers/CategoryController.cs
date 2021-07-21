@@ -23,7 +23,7 @@ namespace BillTracker.Controllers
 
         public IActionResult Index()
         {
-            List<BillCategory> allBillCategorys = new List<BillCategory>();
+            List<Category> allBillCategorys = new List<Category>();
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             List<Member> saveMember = context.Members
@@ -51,7 +51,7 @@ namespace BillTracker.Controllers
             }
                 AddCategoryViewModel addCategoryViewModel = new AddCategoryViewModel();
                 AddCategoryViewModel.Member = saveMember[0];
-                AddCategoryViewModel.SaveCategorys = new List<BillCategory>();
+                AddCategoryViewModel.SaveCategorys = new List<Category>();
 
                 AddCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
                 addCategoryViewModel.CategoryList = AddCategoryViewModel.SaveCategorys.GetRange(0, AddCategoryViewModel.SaveCategorys.Count);
@@ -61,7 +61,7 @@ namespace BillTracker.Controllers
 
         }
         [HttpPost]
-        public IActionResult AddCategory(BillCategory category, AddCategoryViewModel addCategoryViewModel)
+        public IActionResult AddCategory(Category category, AddCategoryViewModel addCategoryViewModel)
         {
             addCategoryViewModel.CategoryList = AddCategoryViewModel.SaveCategorys.GetRange(0, AddCategoryViewModel.SaveCategorys.Count);
             List<Member> saveMember = context.Members
@@ -89,7 +89,7 @@ namespace BillTracker.Controllers
         [Route("/Home/EditCategory/{id}")]
         public IActionResult EditCategory(int id)
         {
-            List<BillCategory> allBillCategorys = new List<BillCategory>();
+            List<Category> allBillCategorys = new List<Category>();
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             List<Member> saveMember = context.Members
@@ -106,7 +106,7 @@ namespace BillTracker.Controllers
                     allBillCategorys.Add(rec.Category);
                 }
             
-                 List<BillCategory> editCategory = context.Categorys
+                 List<Category> editCategory = context.Categorys
                                 .Where(c => c.Id == id)
                                 .ToList();
                         EditCategoryViewModel editCategoryViewModel = new EditCategoryViewModel(
@@ -130,7 +130,7 @@ namespace BillTracker.Controllers
         public IActionResult EditCategory(EditCategoryViewModel editCategoryViewModel)
     {
         editCategoryViewModel.CategoryName = editCategoryViewModel.EditCategoryName;
-        BillCategory oldCategory = context.Categorys.Find(editCategoryViewModel.Id);
+        Category oldCategory = context.Categorys.Find(editCategoryViewModel.Id);
 
         if (ModelState.IsValid)
         {
@@ -157,28 +157,8 @@ namespace BillTracker.Controllers
         [Route("/Home/DeleteCategory/{id}")]
         public IActionResult DeleteCategory(int id)
         {
-            /*           List<BillCategory> allBillCategorys = new List<BillCategory>();
-                       ClaimsPrincipal currentUser = this.User;
-                       var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-                       List<Member> saveMember = context.Members
-                           .Where(m => m.UserId == currentUserId).ToList();
 
-
-                       List<MemberCategory> allMemberCategorys = context.MemberCategorys
-                           .Where(mb => mb.MemberId == saveMember[0].Id)
-                           .Include(mb => mb.Category)
-                           .ToList();
-
-                       foreach (MemberCategory rec in allMemberCategorys)
-                       {
-                           allBillCategorys.Add(rec.Category);
-                       }
-
-                       List<BillCategory> editCategory = context.Categorys
-                                      .Where(c => c.Id == id)
-                                      .ToList();
-            */
-            List<BillCategory> allBillCategorys = new List<BillCategory>();
+            List<Category> allBillCategorys = new List<Category>();
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             List<Member> saveMember = context.Members
@@ -197,16 +177,8 @@ namespace BillTracker.Controllers
            List<MemberBill> saveAllMemberBills = context.MemberBills
                 .Where(mr => mr.MemberId == saveMember[0].Id)
                 .Include(mb => mb.Bill).ToList();
- /*           List<Bill> billWithCategory = new List<Bill>();
-           foreach (MemberBill rec in saveAllMemberBills)
-            {
-                if (rec.Bill.CategoryId == id)
-                {
-                    billWithCategory.Add(rec.Bill);
-                }
-            }
-*/
-            List<BillCategory> deleteCategory = context.Categorys
+
+            List<Category> deleteCategory = context.Categorys
               .Where(c => c.Id == id)
               .ToList();
 
@@ -216,13 +188,6 @@ namespace BillTracker.Controllers
 
                 );
 
- /*           if (billWithCategory.Count > 0)
-            {
-                ModelState.AddModelError("deleteCategoryName", "Category cannot be deleted if it's used in a bill.");
-
- //               return View(deleteCategoryViewModel);
-            }
-*/
 
             DeleteCategoryViewModel.Member = saveMember[0];
             DeleteCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
@@ -239,9 +204,9 @@ namespace BillTracker.Controllers
         public IActionResult DeleteCategory(DeleteCategoryViewModel deleteCategoryViewModel)
         {
            
-            BillCategory oldCategory = context.Categorys.Find(deleteCategoryViewModel.Id);
+            Category oldCategory = context.Categorys.Find(deleteCategoryViewModel.Id);
             List<MemberCategory> memberCategory = context.MemberCategorys
-                .Where(mc => mc.BillCategoryId == deleteCategoryViewModel.Id &&
+                .Where(mc => mc.CategoryId == deleteCategoryViewModel.Id &&
                 mc.MemberId == DeleteCategoryViewModel.Member.Id).ToList();
       
 

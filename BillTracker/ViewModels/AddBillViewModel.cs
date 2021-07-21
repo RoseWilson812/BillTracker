@@ -39,16 +39,15 @@ namespace BillTracker.ViewModels
         [Required(ErrorMessage = "Tax Deductible must be Y or N")]
         public char TaxDeductible { get; set; }
         public List<SelectListItem> PossibleCategories { get; set; }
-        public static List<BillCategory> SaveCategories { get; set; }
-        //public int CategoryId { get; set; }
-        public BillCategory Categorys { get; set; }
+        public static List<Category> SaveCategories { get; set; }
+  //      public Category Categorys { get; set; }
         public static string[] SelectedCategory { get; set; }
  //       public static int SaveMemberId {get; set;}
         public static Member Member { get; set; }
-        public List<Bill> SaveBills { get; set; }
+        public List<DisplayBill> SaveBills { get; set; }
 
 
-        public AddBillViewModel(List<BillCategory> categories, Member memberId) //DateTime formattedDate)
+        public AddBillViewModel(List<Category> categories, Member memberId) //DateTime formattedDate)
         {
         //    DueDate = formattedDate;
         //    PaidDate = formattedDate;
@@ -56,7 +55,7 @@ namespace BillTracker.ViewModels
             TaxDeductible = 'N';
             Member = memberId;
  //           PossibleCategories = new List<SelectListItem>();
-            SaveCategories = new List<BillCategory>();
+            SaveCategories = new List<Category>();
             SaveCategories = categories.GetRange(0, categories.Count);
             CreateDropdown();
  

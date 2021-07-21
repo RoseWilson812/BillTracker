@@ -14,9 +14,9 @@ namespace BillTracker.ViewModels
         public static Member Member { get; set; }
         public int Id { get; set; }
 
-        public static List<BillCategory> SaveCategorys { get; set; }
+        public static List<Category> SaveCategorys { get; set; }
        
-        public List<BillCategory> CategoryList { get; set; }
+        public List<Category> CategoryList { get; set; }
         public AddCategoryViewModel()
         {
 
