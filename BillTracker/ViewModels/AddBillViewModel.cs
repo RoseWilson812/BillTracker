@@ -11,6 +11,9 @@ namespace BillTracker.ViewModels
 {
     public class AddBillViewModel
     {
+        
+        public string PaymentType { get; set; }
+
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:mm/dd/yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "A valid date must be entered!")]
@@ -38,22 +41,24 @@ namespace BillTracker.ViewModels
 
         [Required(ErrorMessage = "Tax Deductible must be Y or N")]
         public char TaxDeductible { get; set; }
+        [BindProperty]
+        public string UserId { get; set; }
         public List<SelectListItem> PossibleCategories { get; set; }
         public static List<Category> SaveCategories { get; set; }
   //      public Category Categorys { get; set; }
         public static string[] SelectedCategory { get; set; }
  //       public static int SaveMemberId {get; set;}
-        public static Member Member { get; set; }
+ //       public static Member Member { get; set; }
         public List<DisplayBill> SaveBills { get; set; }
 
 
-        public AddBillViewModel(List<Category> categories, Member memberId) //DateTime formattedDate)
+        public AddBillViewModel(List<Category> categories, string userId) //DateTime formattedDate)
         {
         //    DueDate = formattedDate;
         //    PaidDate = formattedDate;
   //          Memo = "";
             TaxDeductible = 'N';
-            Member = memberId;
+            UserId = userId;
  //           PossibleCategories = new List<SelectListItem>();
             SaveCategories = new List<Category>();
             SaveCategories = categories.GetRange(0, categories.Count);

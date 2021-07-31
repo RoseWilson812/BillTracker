@@ -5,7 +5,7 @@
 <a class="btn btn-primary btn-sm active" asp-area="" asp-controller="Category" asp-action="Index" role="button">Add Category</a>
 <br />
 <br />
-<form asp-controller="Home" asp-action="UpdateBill" method="post">
+<form asp-controller="Home" asp-action="EditBill" method="post">
     <div>
         <label asp-for="DueDate">Due Date</label>
         <input asp-for="DueDate" />
@@ -15,6 +15,11 @@
         <label asp-for="PaidDate">Paid Date</label>
         <input asp-for="PaidDate" />
         <span asp-validation-for="PaidDate"></span>
+    </div>
+    <div>
+        <label asp-for="PaymentType">Payment Type</label>
+        <input asp-for="PaymentType" />
+        <span asp-validation-for="PaymentType"></span>
     </div>
     <div>
         <label asp-for="Payee">Payee</label>
@@ -43,9 +48,10 @@
         <span asp-validation-for="TaxDeductible"></span>
     </div>
     <div class="row form-group">
-       
-            @Html.HiddenFor(model => model.Id)
-       
+
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.UserId)
+
     </div>
 
     <input type="submit" value="Save Bill" />

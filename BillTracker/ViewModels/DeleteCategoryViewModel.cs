@@ -11,7 +11,7 @@ namespace BillTracker.ViewModels
     {
         
         public string CategoryName { get; set; }
-        public static Member Member { get; set; }
+        public string UserId { get; set; }
         public int Id { get; set; }
         [Required]
         public string DeleteCategoryName { get; set; }
@@ -23,11 +23,12 @@ namespace BillTracker.ViewModels
         {
         }
        
-        public DeleteCategoryViewModel(int id, string deleteCategory)
+        public DeleteCategoryViewModel(int id, string deleteCategory, string userId)
         {
             Id = id;
             CategoryName = "";
             DeleteCategoryName = deleteCategory;
+            UserId = userId;
         }
     }
 }

@@ -20,6 +20,9 @@
                                 <th style="display:none">
                                     Id
                                 </th>
+                                <th style="display:none">
+                                    UserId
+                                </th>
                                 <th class="th-sm">
                                     Category Name
                                 </th>
@@ -35,17 +38,18 @@
                         <tbody>
                             @foreach (var category in @Model.CategoryList)
                             {
-                                <tr>
-                                    <td style="display:none">@category.Id</td>
-                                    <td>@category.CategoryName</td>
-                                    <td>
-                                        <a asp-area="" asp-controller="Home" asp-action="EditCategory" asp-route-id="@category.Id">Edit</a>
-                                    </td>
-                                    <td>
-                                        <a asp-area="" asp-controller="Home" asp-action="DeleteCategory" asp-route-id="@category.Id">Delete</a>
+                            <tr>
+                                <td style="display:none">@category.Id</td>
+                                <td style="display:none">@category.UserId</td>
+                                <td>@category.CategoryName</td>
+                                <td>
+                                    <a asp-area="" asp-controller="Home" asp-action="EditCategory" asp-route-id="@category.Id">Edit</a>
+                                </td>
+                                <td>
+                                    <a asp-area="" asp-controller="Home" asp-action="DeleteCategory" asp-route-id="@category.Id">Delete</a>
 
-                                    </td>
-                                </tr>
+                                </td>
+                            </tr>
                             }
 
                         </tbody>
@@ -67,6 +71,7 @@
                     <input asp-for="CategoryName" />
                     <span asp-validation-for="CategoryName"></span>
                 </div>
+                @Html.HiddenFor(model => model.UserId)
                 <input type="submit" value="Save Category" />
             </form>
             <br /> <br />
@@ -75,15 +80,17 @@
             @if (ViewBag.edit == "Edit")
 
             {
-                <form asp-controller="Category" asp-action="EditCategory" method="post">
-                    <div class="form-group">
-                        <label asp-for="CategoryName">Category</label>
-                        <input asp-for="CategoryName" />
-                        <span asp-validation-for="CategoryName"></span>
-                    </div>
-                    @Html.HiddenFor(model => model.Id)
-                    <input type="submit" value="Save Changes" />
-                </form>
+        <form asp-controller="Category" asp-action="EditCategory" method="post">
+            <div class="form-group">
+                <label asp-for="CategoryName">Category</label>
+                <input asp-for="CategoryName" />
+                <span asp-validation-for="CategoryName"></span>
+            </div>
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.UserId)
+
+            <input type="submit" value="Save Changes" />
+        </form>
             }
             else
             {

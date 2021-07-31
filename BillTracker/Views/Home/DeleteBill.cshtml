@@ -3,48 +3,54 @@
 <h2>Delete Bill</h2>
 <br /> <br /> 
 
-<form asp-controller="Home" asp-action="DeleteBill" method="post">
-    <div>
-        <label asp-for="DueDate">Due Date</label>
-        <input asp-for="DueDate" readonly="readonly" />
-        
-    </div>
-    <div>
-        <label asp-for="PaidDate">Paid Date</label>
-        <input asp-for="PaidDate" readonly="readonly" />
-      
-    </div>
-    <div>
-        <label asp-for="Payee">Payee</label>
-        <input asp-for="Payee" readonly="readonly" />
-       
-    </div>
-    <div>
-        <label asp-for="Amount">Amount</label>
-        <input asp-for="Amount" readonly="readonly" />
-        
-    </div>
-    <div>
-        <label asp-for="CategoryName">Category</label>
-        <input asp-for="CategoryName" readonly="readonly" />
-        
-    </div>
+       <form asp-controller="Home" asp-action="DeleteBill" method="post">
+           <div>
+               <label asp-for="DueDate">Due Date</label>
+               <input asp-for="DueDate" readonly="readonly" />
 
-    <div>
-        <label asp-for="Memo">Memo</label>
-        <input asp-for="Memo" readonly="readonly" />
-        
-    </div>
-    <div>
-        <label asp-for="TaxDeductible">Tax Deductible</label>
-        <input asp-for="TaxDeductible" readonly="readonly" />
-        
-    </div>
-    <div class="row form-group">
+           </div>
+           <div>
+               <label asp-for="PaidDate">Paid Date</label>
+               <input asp-for="PaidDate" readonly="readonly" />
 
-        @Html.HiddenFor(model => model.Id)
+           </div>
+           <div>
+               <label asp-for="PaymentType">Payment Type</label>
+               <input asp-for="PaymentType" readonly="readonly" />
 
-    </div>
-    
-    <input type="submit" class="btn btn-danger" value="Delete Bill" />
-</form>
+           </div>
+           <div>
+               <label asp-for="Payee">Payee</label>
+               <input asp-for="Payee" readonly="readonly" />
+
+           </div>
+           <div>
+               <label asp-for="Amount">Amount</label>
+               <input asp-for="Amount" readonly="readonly" />
+
+           </div>
+           <div>
+               <label asp-for="CategoryName">Category</label>
+               <input asp-for="CategoryName" readonly="readonly" />
+
+           </div>
+
+           <div>
+               <label asp-for="Memo">Memo</label>
+               <input asp-for="Memo" readonly="readonly" />
+
+           </div>
+           <div>
+               <label asp-for="TaxDeductible">Tax Deductible</label>
+               <input asp-for="TaxDeductible" readonly="readonly" />
+
+           </div>
+           <div class="row form-group">
+
+               @Html.HiddenFor(model => model.Id)
+               @Html.HiddenFor(model => model.UserId)
+
+           </div>
+
+           <input type="submit" class="btn btn-danger" value="Delete Bill" />
+       </form>

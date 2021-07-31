@@ -20,11 +20,17 @@ else
                 <th style="display:none">
                     Id
                 </th>
+                <th style="display:none">
+                    UserId
+                </th>
                 <th class="th-sm">
                     Due Date
                 </th>
                 <th class="th-sm">
                     Paid Date
+                </th>
+                <th class="th-sm">
+                    Payment Type
                 </th>
                 <th class="th-sm">
                     Payee
@@ -46,41 +52,43 @@ else
 
                 </th>
                 <th class="th-sm">
-                    
+
                 </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var bill in @Model.SaveBills)
             {
-                <tr>
-                    <td style="display:none"> @bill.Id</td>
-                    <td>@Convert.ToString(string.Format("{0:MM/dd/yyyy}", bill.DueDate))</td>
-                    @* <td>@bill.DueDate</td> *@
-                    @if (bill.PaidDate != null)
-                    {
-                        <td>@Convert.ToString(string.Format("{0:MM/dd/yyyy}", bill.PaidDate))</td>
-                    }
-                    else
-                    {
-                        <td>@bill.PaidDate</td>
+            <tr>
+                <td style="display:none"> @bill.Id</td>
+                <td style="display:none"> @bill.UserId</td>
+                <td>@Convert.ToString(string.Format("{0:MM/dd/yyyy}", bill.DueDate))</td>
+                @* <td>@bill.DueDate</td> *@
+                @if (bill.PaidDate != null)
+                {
+                    <td>@Convert.ToString(string.Format("{0:MM/dd/yyyy}", bill.PaidDate))</td>
+                }
+                else
+                {
+                    <td>@bill.PaidDate</td>
 
-                    }
-                    <td>@bill.Payee</td>
-                    <td>@bill.CategoryName</td>
-                    <td>@bill.Memo</td>
-                    <td>@bill.Amount</td>
-                    <td>@bill.TaxDeductible</td>
+                }
+                <td>@bill.PaymentType</td>
+                <td>@bill.Payee</td>
+                <td>@bill.CategoryName</td>
+                <td>@bill.Memo</td>
+                <td>@bill.Amount</td>
+                <td>@bill.TaxDeductible</td>
 
-                    <td>
-                        @*  <i class="bi bi-pencil"></i>   <i class="bi bi-trash"></i>*@
-                        <a asp-area="" asp-controller="Home" asp-action="EditBill" asp-route-id="@bill.Id">Edit</a>
-                    </td>
-                    <td>
-                        <a asp-area="" asp-controller="Home" asp-action="DeleteBill" asp-route-id="@bill.Id">Delete</a>
-                           
-                    </td>
-                </tr>
+                <td>
+                    @*  <i class="bi bi-pencil"></i>   <i class="bi bi-trash"></i>*@
+                    <a asp-area="" asp-controller="Home" asp-action="EditBill" asp-route-id="@bill.Id">Edit</a>
+                </td>
+                <td>
+                    <a asp-area="" asp-controller="Home" asp-action="DeleteBill" asp-route-id="@bill.Id">Delete</a>
+
+                </td>
+            </tr>
             }
 
         </tbody>

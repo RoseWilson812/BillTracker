@@ -9,13 +9,15 @@ namespace BillTracker.Models
     {
         public int Id { get; set; }
         public string CategoryName { get; set; }
+        public string UserId { get; set; }
 
         public Category()
         {
         }
-        public Category(string categoryName)
+        public Category(string categoryName, string userId)
         {
             CategoryName = categoryName;
+            UserId = userId;
         }
         public override bool Equals(object obj)
         {
