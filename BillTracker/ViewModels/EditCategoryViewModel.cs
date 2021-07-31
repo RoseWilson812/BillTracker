@@ -1,4 +1,5 @@
 ﻿using BillTracker.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,7 +12,8 @@ namespace BillTracker.ViewModels
     {
   //      [Required(ErrorMessage = "Category Name is required!")]
         public string CategoryName { get; set; }
-        public static Member Member { get; set; }
+        [BindProperty]
+        public string UserId { get; set; }
         public int Id { get; set; }
         [Required(ErrorMessage = "Category Name cannot be blank!")]
         public string EditCategoryName { get; set; }
@@ -23,15 +25,17 @@ namespace BillTracker.ViewModels
         {
 
         }
-        public EditCategoryViewModel(string category)
+        public EditCategoryViewModel(string category, string userId)
         {
             CategoryName = category;
+            UserId = userId;
         }
-        public EditCategoryViewModel(int id, string editCategory)
+        public EditCategoryViewModel(int id, string editCategory, string userId)
         {
             Id = id;
             CategoryName = "";
             EditCategoryName = editCategory;
+            UserId = userId;
         }
     }
 }

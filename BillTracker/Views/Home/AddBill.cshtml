@@ -26,6 +26,11 @@ else
                <span asp-validation-for="PaidDate"></span>
            </div>
            <div class="form-group">
+               <label asp-for="PaymentType">Payment Type(check#, 'Cash' or 'Card')</label>
+               <input asp-for="PaymentType" />
+               <span asp-validation-for="PaymentType"></span>
+           </div>
+           <div class="form-group">
                <label asp-for="Payee"></label>
                <input asp-for="Payee" />
                <span asp-validation-for="Payee"></span>
@@ -49,6 +54,7 @@ else
                <input asp-for="TaxDeductible" />
                <span asp-validation-for="TaxDeductible"></span>
            </div>
+           @Html.HiddenFor(model => model.UserId)
            <input type="submit" value="Save Bill" />
        </form>
 }

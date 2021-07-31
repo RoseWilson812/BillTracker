@@ -13,7 +13,9 @@ namespace BillTracker.ViewModels
 {
     public class DeleteBillViewModel
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
+        [BindProperty]
+        public string PaymentType {get; set;}
 
         [DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
@@ -34,6 +36,8 @@ namespace BillTracker.ViewModels
         public string Memo { get; set; }
                 
         public char TaxDeductible { get; set; }
+        [BindProperty]
+        public string UserId { get; set; }
         public List<SelectListItem> PossibleCategories { get; set; }
         public static List<Category> SaveCategories { get; set; }
 
@@ -44,11 +48,12 @@ namespace BillTracker.ViewModels
         public List<Bill> SaveBills { get; set; }
 
 
-        public DeleteBillViewModel(int id, DateTime dueDate, DateTime? paidDate, string payee,
-            decimal amount, int categoryId, string memo, char taxDeductible, List<Category> categories,
-            Member member)
+        public DeleteBillViewModel(int id, string paymentType, DateTime dueDate, DateTime? paidDate, string payee,
+            decimal amount, int categoryId, string memo, char taxDeductible,
+            string userId, Member member, List<Category> categories)
         {
             Id = id;
+            PaymentType = paymentType;
             DueDate = dueDate;
             PaidDate = paidDate;
             Payee = payee;
@@ -56,7 +61,7 @@ namespace BillTracker.ViewModels
             CategoryId = categoryId;
             Memo = memo;
             TaxDeductible = taxDeductible;
-
+            UserId = userId;
             Member = member;
             //SaveCategories = new List<BillCategory>();
             SaveCategories = categories.GetRange(0, categories.Count);
