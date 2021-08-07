@@ -78,6 +78,7 @@
                 <input asp-for="CategoryName" readonly="readonly" />
 
             </div>
+
             <br /> <br />
             <h2>Delete Category</h2>
             
@@ -91,6 +92,7 @@
                         <span asp-validaton-for="DeleteCategoryName"></span>
                     </div>
                     @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.UserId)
                     <input type="submit" class="btn btn-danger" value="Delete Category" />
                 </form>
             }

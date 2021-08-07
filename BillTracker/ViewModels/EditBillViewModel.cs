@@ -17,13 +17,10 @@ namespace BillTracker.ViewModels
         public string PaymentType { get; set; }
 
         [DataType(DataType.Date)]
-        //[DisplayFormat(DataFormatString = "{0:mm/dd/yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "A valid date must be entered!")]
         public DateTime DueDate { get; set; }
 
         [DataType(DataType.Date)]
-        //[DisplayFormat(DataFormatString = "{0:mm/dd/yyyy}", ApplyFormatInEditMode = true, ConvertEmptyStringToNull = false)]
-
         public DateTime? PaidDate { get; set; }
 
         [Required(ErrorMessage = "Payee is required!")]
@@ -50,8 +47,6 @@ namespace BillTracker.ViewModels
         
         public Category Categorys { get; set; }
         public static string[] SelectedCategory { get; set; }
-     
-//        public static Member Member { get; set; }
         public List<Bill> SaveBills { get; set; }
 
 

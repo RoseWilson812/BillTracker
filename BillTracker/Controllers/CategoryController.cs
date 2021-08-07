@@ -23,7 +23,7 @@ namespace BillTracker.Controllers
 
         public IActionResult Index()
         {
-//            List<Category> allBillCategorys = new List<Category>();
+
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             List<Member> saveMember = context.Members
@@ -33,20 +33,11 @@ namespace BillTracker.Controllers
                    .ToList();
             if (saveMember.Count == 0)
             {
-               // List<Category> allBillCategorys = context.Categorys
-                //    .Where(c => c.UserId == currentUserId)
-                //    .ToList();
 
-               
-   //         }
-   //         else
-   //         {
                 Member newMember = new Member(currentUserId);
                 context.Members.Add(newMember);
                 context.SaveChanges();
-                //List<Category> allBillCategorys = new List<Category>();
-                //                saveMember = context.Members
-                //                  .Where(m => m.UserId == currentUserId).ToList();
+                
             }
                 AddCategoryViewModel addCategoryViewModel = new AddCategoryViewModel();
                 addCategoryViewModel.UserId = currentUserId;
@@ -63,18 +54,16 @@ namespace BillTracker.Controllers
         public IActionResult AddCategory(Category category, AddCategoryViewModel addCategoryViewModel)
         {
             addCategoryViewModel.CategoryList = AddCategoryViewModel.SaveCategorys.GetRange(0, AddCategoryViewModel.SaveCategorys.Count);
- //           List<Member> saveMember = context.Members
-//             .Where(m => m.UserId == AddCategoryViewModel.Member.UserId).ToList();
+            if (addCategoryViewModel.UserId == null)
+            {
+                ClaimsPrincipal currentUser = this.User;
+                var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+                category.UserId = currentUserId;
+            }
+
             if (ModelState.IsValid)
             {
                 context.Categorys.Add(category);
-
- //               var holdMemberCategory = new MemberCategory
-//                {
-//                    Member = saveMember[0],
-//                    Category = category
-//                };
-//                context.MemberCategorys.Add(holdMemberCategory);
                 context.SaveChanges();
                 ViewBag.edit = "";
                 return Redirect("/Category");
@@ -88,21 +77,13 @@ namespace BillTracker.Controllers
         [Route("/Home/EditCategory/{id}")]
         public IActionResult EditCategory(int id)
         {
-//            List<Category> allBillCategorys = new List<Category>();
+
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-//              List<Member> saveMember = context.Members
-//                .Where(m => m.UserId == currentUserId).ToList();
-            
 
-                List<Category> allBillCategorys = context.Categorys
+            List<Category> allBillCategorys = context.Categorys
                     .Where(c => c.UserId == currentUserId)
                     .ToList();
-
- //               foreach (MemberCategory rec in allMemberCategorys)
- //               {
- //                   allBillCategorys.Add(rec.Category);
- //               }
             
                  List<Category> editCategory = context.Categorys
                                 .Where(c => c.Id == id)
@@ -112,7 +93,7 @@ namespace BillTracker.Controllers
                            editCategory[0].CategoryName,
                            editCategory[0].UserId
                             );
- //           EditCategoryViewModel.UserId = currentUserId;
+ 
             EditCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
 
             editCategoryViewModel.CategoryList = EditCategoryViewModel.SaveCategorys.GetRange(0, EditCategoryViewModel.SaveCategorys.Count);
@@ -155,13 +136,7 @@ namespace BillTracker.Controllers
         [Route("/Home/DeleteCategory/{id}")]
         public IActionResult DeleteCategory(int id)
         {
-
-            //           List<Category> allBillCategorys = new List<Category>();
-            //            ClaimsPrincipal currentUser = this.User;
-            //           var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-            //            List<Member> saveMember = context.Members
-            //               .Where(m => m.UserId == currentUserId).ToList();
-
+        
             List<Category> deleteCategory = context.Categorys
              .Where(c => c.Id == id)
               .ToList();
@@ -169,17 +144,6 @@ namespace BillTracker.Controllers
             List<Category> allBillCategorys = context.Categorys
                 .Where(c => c.UserId == deleteCategory[0].UserId)
                 .ToList();
-//            foreach (MemberCategory rec in memberCategory)
-//            {
-//                allBillCategorys.Add(rec.Category);
-//            }
-
-
-//           List<MemberBill> saveAllMemberBills = context.MemberBills
-//                .Where(mr => mr.MemberId == saveMember[0].Id)
- //               .Include(mb => mb.Bill).ToList();
-
-
 
             DeleteCategoryViewModel deleteCategoryViewModel = new DeleteCategoryViewModel(
                deleteCategory[0].Id,
@@ -189,7 +153,7 @@ namespace BillTracker.Controllers
                 );
 
 
-//            DeleteCategoryViewModel.Member = saveMember[0];
+
             DeleteCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
 
             deleteCategoryViewModel.CategoryList = DeleteCategoryViewModel.SaveCategorys.GetRange(0, DeleteCategoryViewModel.SaveCategorys.Count);
@@ -205,24 +169,12 @@ namespace BillTracker.Controllers
         {
            
             Category oldCategory = context.Categorys.Find(deleteCategoryViewModel.Id);
-//            List<MemberCategory> memberCategory = context.MemberCategorys
-//                .Where(mc => mc.CategoryId == deleteCategoryViewModel.Id &&
-//                mc.MemberId == DeleteCategoryViewModel.Member.Id).ToList();
-      
 
             List<Bill> billWithCategory = context.Bills
                 .Where(b => b.UserId == deleteCategoryViewModel.UserId &&
                             b.CategoryId == deleteCategoryViewModel.Id)
                 .ToList();
 
-//            List<Bill> billWithCategory = new List<Bill>();
-//             foreach (MemberBill rec in saveAllMemberBills)
- //           {
-//                if (rec.Bill.CategoryId == deleteCategoryViewModel.Id)
-//                {
-//                    billWithCategory.Add(rec.Bill);
-//                } 
-//            }
             if (billWithCategory.Count > 0)
             {
                 ModelState.AddModelError("deleteCategoryName", "Category cannot be deleted if it's used in a bill.");
@@ -233,7 +185,6 @@ namespace BillTracker.Controllers
 
                 
             context.Categorys.Remove(oldCategory);
-//            context.MemberCategorys.Remove(memberCategory[0]);
             context.SaveChanges();
             return RedirectToAction("Index", "Category");
 

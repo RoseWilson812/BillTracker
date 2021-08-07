@@ -3,16 +3,13 @@ using BillTracker.Models;
 using BillTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+
 
 namespace BillTracker.Controllers
 {
@@ -31,7 +28,6 @@ namespace BillTracker.Controllers
         {
            
             List<DisplayBill> allBills = new List<DisplayBill>();
-   //         List<DisplayBill> billsAndCategoryName = new List<DisplayBill>();
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             List<Member> saveMember = context.Members
@@ -62,8 +58,6 @@ namespace BillTracker.Controllers
                 Member  newMember = new Member(currentUserId);
                 context.Members.Add(newMember);
                 context.SaveChanges();
-//                saveMember = context.Members
-//                    .Where(m => m.UserId == currentUserId).ToList();
 
             }
                                  
@@ -82,8 +76,7 @@ namespace BillTracker.Controllers
         public IActionResult AddBill()
         {
 
-      //          List<Category> categories = context.Categorys.OrderBy(category => category.CategoryName).ToList();
-      //      List<Category> rawCategories = new List<Category>();
+ 
             List<Category> categories = new List<Category>();
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -92,10 +85,7 @@ namespace BillTracker.Controllers
             List<Category> rawCategories = context.Categorys
                 .Where(c => c.UserId == currentUserId)
                 .ToList();
-//            foreach (MemberCategory rec in memberCategories)
-//            {
-//                rawCategories.Add(rec.Category);
-//            }
+
 
             if (rawCategories.Count == 0)
             {
@@ -113,39 +103,52 @@ namespace BillTracker.Controllers
         [HttpPost]
         public IActionResult AddBill(Bill bill, AddBillViewModel addBillViewModel)
         {
-   //         Member holdMember = context.Members.Find(AddBillViewModel.Member.Id);
+
             List<Member> saveMember = context.Members
                .Where(m => m.UserId == addBillViewModel.UserId).ToList();
+
             if (! (addBillViewModel.PaidDate is null))
             {
                 if (addBillViewModel.PaymentType is null)
                 {
                     ModelState.AddModelError("PaymentType", "Payment Type must be a check #, 'Card' or 'Cash'.");                    
                 }
+                else
+                {
+                    string enteredPaymentType = addBillViewModel.PaymentType.Trim().ToLower();
+                    if (enteredPaymentType == "card" || 
+                        enteredPaymentType == "cash" ||
+                        enteredPaymentType.All(char.IsDigit))
+                    {
+                        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+
+                        string upperPaymentType = textInfo.ToTitleCase(enteredPaymentType);
+
+                        addBillViewModel.PaymentType = upperPaymentType;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("PaymentType", "Payment Type must be a check #, 'Card' or 'Cash'.");
+                    }
+                }
+            }
+            else
+            {
+                if (!(addBillViewModel.PaymentType is null))
+                {
+                    ModelState.AddModelError("PaymentType", "Payment Type must be blank if Paid Date is blank.");
+                }
             }
             if (ModelState.IsValid)
             {
                 Category holdCategory = context.Categorys.Find(addBillViewModel.CategoryId);
-
+                if (addBillViewModel.PaymentType == " ")
+                {
+                    bill.PaymentType = null;
+                }
                 bill.TaxDeductible = Char.ToUpper(addBillViewModel.TaxDeductible);
                 bill.Amount = decimal.Round(bill.Amount, 2);
                 context.Bills.Add(bill);
-               
-//                var holdMemberBills = new MemberBill
-//                {
-//                    Member = saveMember[0],
-//                    Bill = bill
-//                };
-//                context.MemberBills.Add(holdMemberBills);
-
-/*                 var holdCategoryBill = new MemberCategoryBill
-                 {
-                        Member = saveMember[0],
-                        Category = holdCategory,
-                        Bill = bill
-                    };
-                context.MemberCategoryBills.Add(holdCategoryBill);
-*/
 
                 context.SaveChanges();
                 ViewBag.message = "Bill Successfully Added";
@@ -153,11 +156,11 @@ namespace BillTracker.Controllers
             }
             else
             {
+// displays model.state errors:
+//    var errors = ModelState.Select(x => x.Value.Errors)
+//                                          .Where(y => y.Count > 0)
+//                                          .ToList();
 
- //    var errors = ModelState.Select(x => x.Value.Errors)
- //                                          .Where(y => y.Count > 0)
- //                                          .ToList();
-  // displays model.state errors               
                 ViewBag.message = "";
                 addBillViewModel.CreateDropdown();
                 return View(addBillViewModel);
@@ -168,9 +171,7 @@ namespace BillTracker.Controllers
         [Route("/Home/EditBill/{id}")]
         public IActionResult EditBill(int id)
         {
-            //            ClaimsPrincipal currentUser = this.User;
-            //            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
+            
             List<Bill> editBill = context.Bills
          .Where(b => b.Id == id)
          .ToList();
@@ -202,21 +203,45 @@ namespace BillTracker.Controllers
         [HttpPost]
         public IActionResult EditBill(EditBillViewModel editBillViewModel)
         {
-//            bool categoryChangedSw = false;
+
             Bill oldBill = context.Bills.Find(editBillViewModel.Id);
-/*            List<MemberCategoryBill> oldMemberCategoryBills = context.MemberCategoryBills
-                   .Where(cb => cb.BillId == editBillViewModel.Id)
-                   .Include(cb => cb.Category)
-                   .Include(cb => cb.Member)
-                   .ToList();
-*/
             Category oldCategory = context.Categorys.Find(editBillViewModel.CategoryId);
-            //            Member oldMember = oldMemberCategoryBills[0].Member;
+            if (!(editBillViewModel.PaymentType is null))
+            {
+                string upperPaymentType = "";
+                upperPaymentType = editBillViewModel.PaymentType.Trim().ToLower();
+                TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+
+                upperPaymentType = textInfo.ToTitleCase(upperPaymentType);
+
+                editBillViewModel.PaymentType = upperPaymentType;
+            }
             if (!(editBillViewModel.PaidDate is null))
             {
                 if (editBillViewModel.PaymentType is null)
                 {
                     ModelState.AddModelError("PaymentType", "Payment Type must be a check #, 'Card' or 'Cash'.");
+                }
+                else
+                {
+                    string enteredPaymentType = editBillViewModel.PaymentType.ToLower();
+                    if (enteredPaymentType == "card" ||
+                        enteredPaymentType == "cash" ||
+                        enteredPaymentType.All(char.IsDigit))
+                    {
+                        ;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("PaymentType", "Payment Type must be a check #, 'Card' or 'Cash'.");
+                    }
+                }
+            }
+            else
+            {
+                if (!(editBillViewModel.PaymentType is null))
+                {
+                    ModelState.AddModelError("PaymentType", "Payment Type must be blank if Paid Date is blank.");
                 }
             }
 
@@ -227,34 +252,14 @@ namespace BillTracker.Controllers
                 oldBill.PaidDate = editBillViewModel.PaidDate;
                 oldBill.Payee = editBillViewModel.Payee;
                 oldBill.Memo = editBillViewModel.Memo;
-/*                if (oldBill.CategoryId == editBillViewModel.CategoryId)
-                {
-                    categoryChangedSw = false;
-                }
-                else
-                {
-                    categoryChangedSw = true;
-                }
-*/
+
                 oldBill.CategoryId = editBillViewModel.CategoryId;
                 oldBill.Amount = editBillViewModel.Amount;
                 oldBill.TaxDeductible = Char.ToUpper(editBillViewModel.TaxDeductible);
                 oldBill.UserId = editBillViewModel.UserId;
                 context.Bills.Update(oldBill);
 
- /*               if (categoryChangedSw == true)
-                {
-                    context.MemberCategoryBills.Remove(oldMemberCategoryBills[0]);
-                    MemberCategoryBill newMemberCategoryBill = new MemberCategoryBill
-                    {
-                        Member = oldMemberCategoryBills[0].Member,
-                        Category = oldCategory,
-                        Bill = oldBill
-                    };
-
-                    context.MemberCategoryBills.Add(newMemberCategoryBill);
-                }
- */
+ 
                 context.SaveChanges();
                 ViewBag.message = "";
                 editBillViewModel.CreateDropdown();
@@ -273,11 +278,6 @@ namespace BillTracker.Controllers
         [Route("/Home/DeleteBill/{id}")]
         public IActionResult DeleteBill(int id)
         {
-         
-
-//            ClaimsPrincipal currentUser = this.User;
-//            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
             List<Bill> editBill = context.Bills
                     .Where(b => b.Id == id)
                     .ToList();
@@ -317,20 +317,7 @@ namespace BillTracker.Controllers
         public IActionResult DeleteBill(int id, DeleteBillViewModel deleteBillViewModel)
         {
             Bill oldBill = context.Bills.Find(id);
-/*            List<MemberCategoryBill> oldMemberCategoryBills = context.MemberCategoryBills
-                  .Where(cb => cb.MemberId == DeleteBillViewModel.Member.Id && cb.BillId == id)
-                  .Include(cb => cb.Category)
-                  .Include(cb => cb.Member)
-                  .ToList();
-*/
-       //     Category oldCategory = context.Categorys.Find(deleteBillViewModel.CategoryId);
-       //     Member oldMember = oldCategoryBills[0].Member;
 
-//            List<MemberBill> saveMemberBill = context.MemberBills
-//               .Where(mb => mb.MemberId == DeleteBillViewModel.Member.Id && mb.BillId == id).ToList();
-
-//            context.MemberBills.Remove(saveMemberBill[0]);
-//           context.MemberCategoryBills.Remove(oldMemberCategoryBills[0]);
             context.Bills.Remove(oldBill);
             context.SaveChanges();
 

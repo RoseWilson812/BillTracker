@@ -24,13 +24,13 @@ else
                     UserId
                 </th>
                 <th class="th-sm">
-                    Due Date
+                    Due <br /> Date
                 </th>
                 <th class="th-sm">
-                    Paid Date
+                    Paid <br /> Date
                 </th>
                 <th class="th-sm">
-                    Payment Type
+                    Payment <br /> Type
                 </th>
                 <th class="th-sm">
                     Payee
@@ -45,8 +45,7 @@ else
                     Amount
                 </th>
                 <th class="th-sm">
-                    Tax
-                    Deductible
+                    Tax <br /> Deductible
                 </th>
                 <th class="th-sm">
 
@@ -63,7 +62,7 @@ else
                 <td style="display:none"> @bill.Id</td>
                 <td style="display:none"> @bill.UserId</td>
                 <td>@Convert.ToString(string.Format("{0:MM/dd/yyyy}", bill.DueDate))</td>
-                @* <td>@bill.DueDate</td> *@
+
                 @if (bill.PaidDate != null)
                 {
                     <td>@Convert.ToString(string.Format("{0:MM/dd/yyyy}", bill.PaidDate))</td>
@@ -81,7 +80,6 @@ else
                 <td>@bill.TaxDeductible</td>
 
                 <td>
-                    @*  <i class="bi bi-pencil"></i>   <i class="bi bi-trash"></i>*@
                     <a asp-area="" asp-controller="Home" asp-action="EditBill" asp-route-id="@bill.Id">Edit</a>
                 </td>
                 <td>

@@ -45,21 +45,15 @@ namespace BillTracker.ViewModels
         public string UserId { get; set; }
         public List<SelectListItem> PossibleCategories { get; set; }
         public static List<Category> SaveCategories { get; set; }
-  //      public Category Categorys { get; set; }
+ 
         public static string[] SelectedCategory { get; set; }
- //       public static int SaveMemberId {get; set;}
- //       public static Member Member { get; set; }
         public List<DisplayBill> SaveBills { get; set; }
 
 
-        public AddBillViewModel(List<Category> categories, string userId) //DateTime formattedDate)
+        public AddBillViewModel(List<Category> categories, string userId) 
         {
-        //    DueDate = formattedDate;
-        //    PaidDate = formattedDate;
-  //          Memo = "";
             TaxDeductible = 'N';
             UserId = userId;
- //           PossibleCategories = new List<SelectListItem>();
             SaveCategories = new List<Category>();
             SaveCategories = categories.GetRange(0, categories.Count);
             CreateDropdown();
