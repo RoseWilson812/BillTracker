@@ -1,0 +1,60 @@
+﻿@model BillTracker.ViewModels.SearchBillsViewModel;
+
+<h2>Bill Search</h2>
+<br />  
+<form asp-controller="SearchBills" asp-action="Search" method="post">
+    <div class="form-check-inline">
+        <label class="form-check-label" asp-for="DateOption">
+            <input asp-for="DateOption" type="radio" class="form-check-input" id="1" value="Due Date">Due Date
+        </label>
+    </div>
+    <div class="form-check-inline">
+        <label class="form-check-label" asp-for="DateOption">
+            <input asp-for="DateOption" type="radio" class="form-check-input" id="2" value="Paid Date">Paid Date
+        </label>
+    </div>
+    <div class="form-group">
+        <label asp-for="FromDate">From Date:</label>
+        <input asp-for="FromDate" />
+        <span asp-validation-for="FromDate"></span>
+
+        <label asp-for="ToDate">To Date:</label>
+        <input asp-for="ToDate" />
+        <span asp-validation-for="ToDate"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PaymentType">Payment Type(check#, 'Cash' or 'Card')</label>
+        <input asp-for="PaymentType" />
+        <span asp-validation-for="PaymentType"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Payee"></label>
+        <input asp-for="Payee" />
+        <span asp-validation-for="Payee"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Amount"></label>
+        <input asp-for="Amount" />
+        <span asp-validation-for="Amount"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CategoryId">Category</label>
+        <select asp-for="CategoryId" asp-items="Model.PossibleSearchCategories"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Memo">Memo</label>
+        <input asp-for="Memo" />
+    </div>
+    <div class="form-group">
+        <label asp-for="TaxDeductible">Tax Deductible(Y or N)</label>
+        <select asp-for="TaxDeductible" asp-items="Model.PossibleTaxDeduction"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="SortTotal">Sort and Total By:</label>
+        <select asp-for="SortTotal" asp-items="Model.PossibleSortTotal"></select>
+    </div>
+    @Html.HiddenFor(model => model.UserId)
+    <input type="submit" value="Search" />
+</form>
+

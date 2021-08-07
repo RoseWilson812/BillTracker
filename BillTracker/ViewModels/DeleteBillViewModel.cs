@@ -63,7 +63,6 @@ namespace BillTracker.ViewModels
             TaxDeductible = taxDeductible;
             UserId = userId;
             Member = member;
-            //SaveCategories = new List<BillCategory>();
             SaveCategories = categories.GetRange(0, categories.Count);
             
             foreach (var category in categories)

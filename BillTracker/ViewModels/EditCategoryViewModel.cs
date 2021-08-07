@@ -10,7 +10,6 @@ namespace BillTracker.ViewModels
 {
     public class EditCategoryViewModel
     {
-  //      [Required(ErrorMessage = "Category Name is required!")]
         public string CategoryName { get; set; }
         [BindProperty]
         public string UserId { get; set; }

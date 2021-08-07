@@ -60,7 +60,7 @@
 
         <div class="col-md-7">
             <h2>Add Category</h2>
-            
+
             <form asp-controller="Category" asp-action="AddCategory" method="post">
                 <div class="form-group">
                     <label asp-for="CategoryName">Category</label>
@@ -71,19 +71,21 @@
             </form>
             <br /> <br />
             <h2>Edit Category</h2>
-            
+
             @if (ViewBag.edit == "Edit")
 
             {
-                <form asp-controller="Category" asp-action="EditCategory" method="post">
-                    <div class="form-group">
-                        <label asp-for="EditCategoryName">Category</label>
-                        <input asp-for="EditCategoryName" />
-                        <span asp-validation-for="EditCategoryName"></span>
-                    </div>
-                    @Html.HiddenFor(model => model.Id)
-                    <input type="submit" value="Save Changes" />
-                </form>
+        <form asp-controller="Category" asp-action="EditCategory" method="post">
+            <div class="form-group">
+                <label asp-for="EditCategoryName">Category</label>
+                <input asp-for="EditCategoryName" />
+                <span asp-validation-for="EditCategoryName"></span>
+            </div>
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.UserId)
+
+            <input type="submit" value="Save Changes" />
+        </form>
             }
             else
             {
@@ -95,12 +97,13 @@
             }
             <br /> <br />
             <h2>Delete Category</h2>
-            
+
             <div>
                 <label asp-for="CategoryName">Category</label>
                 <input asp-for="CategoryName" readonly="readonly" />
 
             </div>
+
         </div>
 
     </div>
