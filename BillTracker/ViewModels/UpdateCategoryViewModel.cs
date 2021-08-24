@@ -1,39 +1,38 @@
 ﻿using BillTracker.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace BillTracker.ViewModels
 {
-    public class EditCategoryViewModel
+    public class UpdateCategoryViewModel
     {
         public string CategoryName { get; set; }
-        [BindProperty]
         public string UserId { get; set; }
         public int Id { get; set; }
-        [Required(ErrorMessage = "Category Name cannot be blank!")]
+        public string DeleteCategoryName { get; set; }
         public string EditCategoryName { get; set; }
-        
+
         public static List<Category> SaveCategorys { get; set; }
+
         public List<Category> CategoryList { get; set; }
-      
-        public EditCategoryViewModel()
+
+        public UpdateCategoryViewModel()
         {
 
         }
-        public EditCategoryViewModel(string category, string userId)
-        {
-            CategoryName = category;
-            UserId = userId;
-        }
-        public EditCategoryViewModel(int id, string editCategory, string userId)
+
+        public UpdateCategoryViewModel(string editCategory, int id, string userId)
         {
             Id = id;
             CategoryName = "";
             EditCategoryName = editCategory;
+            UserId = userId;
+        }
+        public UpdateCategoryViewModel(string deleteCategory, string userId, int id)
+        {
+            Id = id;
+            CategoryName = "";
+            DeleteCategoryName = deleteCategory;
             UserId = userId;
         }
     }
