@@ -202,7 +202,14 @@ namespace BillTracker.Controllers
                 int index = 0;
                 for (int i = 0; i < searchResults.Count; i++)
                 {
-                    savedMemo = searchResults[i].Memo.ToLower();
+                    if (!(searchResults[i].Memo is null))
+                    {
+                        savedMemo = searchResults[i].Memo.ToLower();
+                    }
+                    else
+                    {
+                        savedMemo = "";
+                    }
                     index = savedMemo.IndexOf(enteredMemo);
                    if (index < 0)
                    {
