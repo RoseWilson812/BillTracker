@@ -1,19 +1,15 @@
 ﻿using BillTracker.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BillTracker.ViewModels
 {
     public class EditBillViewModel
     {
         public int Id { get; set; }
-
-       
+               
         public string PaymentType { get; set; }
 
         [DataType(DataType.Date)]
@@ -32,7 +28,6 @@ namespace BillTracker.ViewModels
         [Range(.01, 1000000000, ErrorMessage = "Amount must be greater than 0.00")]
         public decimal Amount { get; set; }
 
-        [BindProperty]
         public int CategoryId { get; set; }
 
         [MaxLength(40)]
@@ -40,7 +35,6 @@ namespace BillTracker.ViewModels
 
         [Required(ErrorMessage = "Tax Deductible must be Y or N")]
         public char TaxDeductible { get; set; }
-        [BindProperty]
         public string UserId { get; set; }
         public List<SelectListItem> PossibleCategories { get; set; }
         public static List<Category> SaveCategories { get; set; }

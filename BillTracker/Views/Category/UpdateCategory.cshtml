@@ -1,4 +1,4 @@
-﻿@model BillTracker.ViewModels.AddCategoryViewModel;
+﻿@model BillTracker.ViewModels.UpdateCategoryViewModel;
 
 <div class="container-fluid">
     <div class="row">
@@ -38,18 +38,18 @@
                         <tbody>
                             @foreach (var category in @Model.CategoryList)
                             {
-                            <tr>
-                                <td style="display:none">@category.Id</td>
-                                <td style="display:none">@category.UserId</td>
-                                <td>@category.CategoryName</td>
-                                <td>
-                                    <a asp-area="" asp-controller="Home" asp-action="EditCategory" asp-route-id="@category.Id">Edit</a>
-                                </td>
-                                <td>
-                                    <a asp-area="" asp-controller="Home" asp-action="DeleteCategory" asp-route-id="@category.Id">Delete</a>
+                                <tr>
+                                    <td style="display:none">@category.Id</td>
+                                    <td style="display:none">@category.UserId</td>
+                                    <td>@category.CategoryName</td>
+                                    <td>
+                                        <a asp-area="" asp-controller="Home" asp-action="EditCategory" asp-route-id="@category.Id">Edit</a>
+                                    </td>
+                                    <td>
+                                        <a asp-area="" asp-controller="Home" asp-action="DeleteCategory" asp-route-id="@category.Id">Delete</a>
 
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
                             }
 
                         </tbody>
@@ -67,7 +67,7 @@
 
             <form asp-controller="Category" asp-action="AddCategory" method="post">
                 <div class="form-group">
-                    <label asp-for="CategoryName">Category</label>
+                    <label asp-for="CategoryName">Category Name</label>
                     <input asp-for="CategoryName" />
                     <span asp-validation-for="CategoryName"></span>
                 </div>
@@ -82,9 +82,9 @@
             {
                 <form asp-controller="Category" asp-action="EditCategory" method="post">
                     <div class="form-group">
-                        <label asp-for="CategoryName">Category</label>
-                        <input asp-for="CategoryName" />
-                        <span asp-validation-for="CategoryName"></span>
+                        <label asp-for="EditCategoryName">Category Name</label>
+                        <input asp-for="EditCategoryName" />
+                        <span asp-validation-for="EditCategoryName"></span>
                     </div>
                     @Html.HiddenFor(model => model.Id)
                     @Html.HiddenFor(model => model.UserId)
@@ -95,22 +95,37 @@
             else
             {
                 <div>
-                    <label asp-for="CategoryName">Category</label>
-                    <input asp-for="CategoryName" readonly="readonly" />
+                    <label asp-for="EditCategoryName">Category Name</label>
+                    <input asp-for="EditCategoryName" readonly="readonly" />
 
                 </div>
             }
             <br /> <br />
             <h3>Delete Category</h3>
 
-            <div>
-                <label asp-for="CategoryName">Category</label>
-                <input asp-for="CategoryName" readonly="readonly" />
+            @if (ViewBag.edit == "Delete")
+            {
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <form asp-controller="Category" asp-action="DeleteCategory" method="post">
+                    <div class="form-group">
+                        <label asp-for="DeleteCategoryName">Category Name</label>
+                        <input asp-for="DeleteCategoryName" readonly="readonly" />
+                        <span asp-validaton-for="DeleteCategoryName"></span>
+                    </div>
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.UserId)
+                    <input type="submit" class="btn btn-danger" value="Delete Category" />
+                </form>
+            }
+            else
+            {
+                <div>
+                    <label asp-for="DeleteCategoryName">Category Name</label>
+                    <input asp-for="DeleteCategoryName" readonly="readonly" />
 
-            </div>
-            @Html.HiddenFor(model => model.Id)
-            @Html.HiddenFor(model => model.UserId)
+                </div>
+            }
+
         </div>
-
     </div>
 </div>

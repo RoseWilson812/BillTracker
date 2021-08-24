@@ -2,13 +2,9 @@
 using BillTracker.Models;
 using BillTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace BillTracker.Controllers
 {
@@ -37,28 +33,34 @@ namespace BillTracker.Controllers
                 Member newMember = new Member(currentUserId);
                 context.Members.Add(newMember);
                 context.SaveChanges();
-                
-            }
-                AddCategoryViewModel addCategoryViewModel = new AddCategoryViewModel();
-                addCategoryViewModel.UserId = currentUserId;
-                AddCategoryViewModel.SaveCategorys = new List<Category>();
 
-                AddCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(category => category.CategoryName).ToList();
-                addCategoryViewModel.CategoryList = AddCategoryViewModel.SaveCategorys.GetRange(0, AddCategoryViewModel.SaveCategorys.Count);
-                ViewBag.edit = "";
-                return View("AddCategory", addCategoryViewModel);
+            }
+            UpdateCategoryViewModel updateCategoryViewModel = new UpdateCategoryViewModel();
+            updateCategoryViewModel.UserId = currentUserId;
+            UpdateCategoryViewModel.SaveCategorys = new List<Category>();
+
+            UpdateCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(category => category.CategoryName).ToList();
+            updateCategoryViewModel.CategoryList = UpdateCategoryViewModel.SaveCategorys.GetRange(0, UpdateCategoryViewModel.SaveCategorys.Count);
+            ViewBag.edit = "";
+            return View("UpdateCategory", updateCategoryViewModel);
 
 
         }
         [HttpPost]
-        public IActionResult AddCategory(Category category, AddCategoryViewModel addCategoryViewModel)
+        public IActionResult AddCategory(Category category, UpdateCategoryViewModel updateCategoryViewModel)
         {
-            addCategoryViewModel.CategoryList = AddCategoryViewModel.SaveCategorys.GetRange(0, AddCategoryViewModel.SaveCategorys.Count);
-            if (addCategoryViewModel.UserId == null)
+            updateCategoryViewModel.CategoryList = UpdateCategoryViewModel.SaveCategorys.GetRange(0, UpdateCategoryViewModel.SaveCategorys.Count);
+            if (updateCategoryViewModel.UserId == null)
             {
                 ClaimsPrincipal currentUser = this.User;
                 var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
                 category.UserId = currentUserId;
+            }
+            if (updateCategoryViewModel.CategoryName == null ||
+                updateCategoryViewModel.CategoryName == "" ||
+                updateCategoryViewModel.CategoryName.All(char.IsWhiteSpace))
+            {
+                ModelState.AddModelError("categoryName", "Category Name is required.");
             }
 
             if (ModelState.IsValid)
@@ -69,7 +71,7 @@ namespace BillTracker.Controllers
                 return Redirect("/Category");
             }
             ViewBag.edit = "";
-            return View(addCategoryViewModel);
+            return View("UpdateCategory", updateCategoryViewModel);
         }
 
 
@@ -84,36 +86,40 @@ namespace BillTracker.Controllers
             List<Category> allBillCategorys = context.Categorys
                     .Where(c => c.UserId == currentUserId)
                     .ToList();
-            
-                 List<Category> editCategory = context.Categorys
-                                .Where(c => c.Id == id)
-                                .ToList();
-                        EditCategoryViewModel editCategoryViewModel = new EditCategoryViewModel(
-                           editCategory[0].Id,
-                           editCategory[0].CategoryName,
-                           editCategory[0].UserId
+
+            Category editCategory = context.Categorys.Find(id);
+                                
+                        UpdateCategoryViewModel updateCategoryViewModel = new UpdateCategoryViewModel(
+                           editCategory.CategoryName,
+                           editCategory.Id,
+                           editCategory.UserId
                             );
  
-            EditCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
+            UpdateCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
 
-            editCategoryViewModel.CategoryList = EditCategoryViewModel.SaveCategorys.GetRange(0, EditCategoryViewModel.SaveCategorys.Count);
+            updateCategoryViewModel.CategoryList = UpdateCategoryViewModel.SaveCategorys.GetRange(0, UpdateCategoryViewModel.SaveCategorys.Count);
 
             
             ViewBag.edit = "Edit";
-            return View( editCategoryViewModel);
+            return View("UpdateCategory", updateCategoryViewModel);
         }
 
     
         [HttpPost]
         [Route("/Home/EditCategory/{id}")]
-        public IActionResult EditCategory(EditCategoryViewModel editCategoryViewModel)
+        public IActionResult EditCategory(UpdateCategoryViewModel updateCategoryViewModel)
     {
-        editCategoryViewModel.CategoryName = editCategoryViewModel.EditCategoryName;
-        Category oldCategory = context.Categorys.Find(editCategoryViewModel.Id);
+        Category oldCategory = context.Categorys.Find(updateCategoryViewModel.Id);
+        if (updateCategoryViewModel.EditCategoryName is null ||
+            updateCategoryViewModel.EditCategoryName == "" ||
+            updateCategoryViewModel.EditCategoryName.All(char.IsWhiteSpace))
+            {
+                ModelState.AddModelError("editCategoryName", "Category Name cannot be blank.");
+            }
 
-        if (ModelState.IsValid)
+            if (ModelState.IsValid)
         {
-            oldCategory.CategoryName = editCategoryViewModel.CategoryName;
+            oldCategory.CategoryName = updateCategoryViewModel.EditCategoryName;
           
             context.Categorys.Update(oldCategory);
             context.SaveChanges();
@@ -125,9 +131,9 @@ namespace BillTracker.Controllers
         else
         {
             ViewBag.edit = "Edit";
-            editCategoryViewModel.CategoryList = EditCategoryViewModel.SaveCategorys.GetRange(0, EditCategoryViewModel.SaveCategorys.Count);
-            editCategoryViewModel.EditCategoryName = oldCategory.CategoryName;
-            return View(editCategoryViewModel);
+            updateCategoryViewModel.CategoryList = UpdateCategoryViewModel.SaveCategorys.GetRange(0, UpdateCategoryViewModel.SaveCategorys.Count);
+            updateCategoryViewModel.EditCategoryName = oldCategory.CategoryName;
+            return View("UpdateCategory", updateCategoryViewModel);
         }
     }
 
@@ -136,51 +142,52 @@ namespace BillTracker.Controllers
         [Route("/Home/DeleteCategory/{id}")]
         public IActionResult DeleteCategory(int id)
         {
-        
-            List<Category> deleteCategory = context.Categorys
-             .Where(c => c.Id == id)
-              .ToList();
+
+            Category deleteCategory = context.Categorys.Find(id);
+
+  // prevents error when using back arrow
+            if (deleteCategory == null)
+            {
+                return RedirectToAction("Index", "Category");
+            }
 
             List<Category> allBillCategorys = context.Categorys
-                .Where(c => c.UserId == deleteCategory[0].UserId)
+                .Where(c => c.UserId == deleteCategory.UserId)
                 .ToList();
 
-            DeleteCategoryViewModel deleteCategoryViewModel = new DeleteCategoryViewModel(
-               deleteCategory[0].Id,
-               deleteCategory[0].CategoryName,
-               deleteCategory[0].UserId
-
+            UpdateCategoryViewModel updateCategoryViewModel = new UpdateCategoryViewModel(
+               deleteCategory.CategoryName,
+               deleteCategory.UserId,
+                deleteCategory.Id
                 );
 
+            UpdateCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
 
-
-            DeleteCategoryViewModel.SaveCategorys = allBillCategorys.OrderBy(billCategory => billCategory.CategoryName).ToList();
-
-            deleteCategoryViewModel.CategoryList = DeleteCategoryViewModel.SaveCategorys.GetRange(0, DeleteCategoryViewModel.SaveCategorys.Count);
+            updateCategoryViewModel.CategoryList = UpdateCategoryViewModel.SaveCategorys.GetRange(0, UpdateCategoryViewModel.SaveCategorys.Count);
 
 
             ViewBag.edit = "Delete";
-            return View(deleteCategoryViewModel);
+            return View("UpdateCategory", updateCategoryViewModel);
         }
 
         [HttpPost]
         [Route("/Home/DeleteCategory/{id}")]
-        public IActionResult DeleteCategory(DeleteCategoryViewModel deleteCategoryViewModel)
+        public IActionResult DeleteCategory(UpdateCategoryViewModel updateCategoryViewModel)
         {
            
-            Category oldCategory = context.Categorys.Find(deleteCategoryViewModel.Id);
+            Category oldCategory = context.Categorys.Find(updateCategoryViewModel.Id);
 
             List<Bill> billWithCategory = context.Bills
-                .Where(b => b.UserId == deleteCategoryViewModel.UserId &&
-                            b.CategoryId == deleteCategoryViewModel.Id)
+                .Where(b => b.UserId == updateCategoryViewModel.UserId &&
+                            b.CategoryId == updateCategoryViewModel.Id)
                 .ToList();
 
             if (billWithCategory.Count > 0)
             {
                 ModelState.AddModelError("deleteCategoryName", "Category cannot be deleted if it's used in a bill.");
-                deleteCategoryViewModel.CategoryList = DeleteCategoryViewModel.SaveCategorys.GetRange(0, DeleteCategoryViewModel.SaveCategorys.Count);
+                updateCategoryViewModel.CategoryList = UpdateCategoryViewModel.SaveCategorys.GetRange(0, UpdateCategoryViewModel.SaveCategorys.Count);
                 ViewBag.edit = "Delete";
-                return View(deleteCategoryViewModel);
+                return View("UpdateCategory", updateCategoryViewModel);
             }
 
                 

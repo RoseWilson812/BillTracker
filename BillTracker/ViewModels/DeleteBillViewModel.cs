@@ -1,20 +1,15 @@
 ﻿using BillTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BillTracker.ViewModels
 {
     public class DeleteBillViewModel
     {
         public int Id { get; set; }
-        [BindProperty]
         public string PaymentType {get; set;}
 
         [DataType(DataType.Date)]
@@ -38,19 +33,13 @@ namespace BillTracker.ViewModels
         public char TaxDeductible { get; set; }
         [BindProperty]
         public string UserId { get; set; }
-        public List<SelectListItem> PossibleCategories { get; set; }
+
         public static List<Category> SaveCategories { get; set; }
-
-        public Category Categorys { get; set; }
-        public static string[] SelectedCategory { get; set; }
-
-        public static Member Member { get; set; }
-        public List<Bill> SaveBills { get; set; }
 
 
         public DeleteBillViewModel(int id, string paymentType, DateTime dueDate, DateTime? paidDate, string payee,
             decimal amount, int categoryId, string memo, char taxDeductible,
-            string userId, Member member, List<Category> categories)
+            string userId, List<Category> categories)
         {
             Id = id;
             PaymentType = paymentType;
@@ -62,7 +51,6 @@ namespace BillTracker.ViewModels
             Memo = memo;
             TaxDeductible = taxDeductible;
             UserId = userId;
-            Member = member;
             SaveCategories = categories.GetRange(0, categories.Count);
             
             foreach (var category in categories)
@@ -77,20 +65,7 @@ namespace BillTracker.ViewModels
         public DeleteBillViewModel()
         {
         }
-        public void CreateDropdown()
-        {
-            PossibleCategories = new List<SelectListItem>();
-            foreach (var category in SaveCategories)
-            {
-                PossibleCategories.Add(
-                    new SelectListItem
-                    {
-                        Value = category.Id.ToString(),
-                        Text = category.CategoryName
-                    }
-                ); ;
-            }
-        }
+
     }
 
 }

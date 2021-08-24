@@ -26,7 +26,7 @@ namespace BillTracker.Controllers
         [Authorize]
         public IActionResult Index()
         {
-           
+ // Get current logged in userId and see if it's in the Member table           
             List<DisplayBill> allBills = new List<DisplayBill>();
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -34,7 +34,8 @@ namespace BillTracker.Controllers
                 .Where(m => m.UserId == currentUserId).ToList();
 
             
-
+// If the current logged in userId is not in the Member table(newly registered user), add it.
+// Otherwise, display all the bills for the current userId.
             if (saveMember.Count > 0)
             {
                 List<Bill> allMemberBills = context.Bills
@@ -76,12 +77,11 @@ namespace BillTracker.Controllers
         public IActionResult AddBill()
         {
 
- 
+// Get the current userId, all the categories for that user and display a blank Add Bill page. 
             List<Category> categories = new List<Category>();
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-            List<Member> saveMember = context.Members
-                .Where(m => m.UserId == currentUserId).ToList();
+
             List<Category> rawCategories = context.Categorys
                 .Where(c => c.UserId == currentUserId)
                 .ToList();
@@ -103,10 +103,8 @@ namespace BillTracker.Controllers
         [HttpPost]
         public IActionResult AddBill(Bill bill, AddBillViewModel addBillViewModel)
         {
-
-            List<Member> saveMember = context.Members
-               .Where(m => m.UserId == addBillViewModel.UserId).ToList();
-
+ // If a PaidDate is entered, the PaymentType must also be entered.
+ // If PaidDate is not entered, PaymentType must be blank. 
             if (! (addBillViewModel.PaidDate is null))
             {
                 if (addBillViewModel.PaymentType is null)
@@ -121,9 +119,9 @@ namespace BillTracker.Controllers
                         enteredPaymentType.All(char.IsDigit))
                     {
                         TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-
+// Capitalized the first letter in payment type if it's == card or cash.
                         string upperPaymentType = textInfo.ToTitleCase(enteredPaymentType);
-
+                        bill.PaymentType = upperPaymentType;
                         addBillViewModel.PaymentType = upperPaymentType;
                     }
                     else
@@ -141,17 +139,17 @@ namespace BillTracker.Controllers
             }
             if (ModelState.IsValid)
             {
-                Category holdCategory = context.Categorys.Find(addBillViewModel.CategoryId);
                 if (addBillViewModel.PaymentType == " ")
                 {
                     bill.PaymentType = null;
                 }
+               
                 bill.TaxDeductible = Char.ToUpper(addBillViewModel.TaxDeductible);
                 bill.Amount = decimal.Round(bill.Amount, 2);
                 context.Bills.Add(bill);
 
                 context.SaveChanges();
-                ViewBag.message = "Bill Successfully Added";
+             
                 return RedirectToAction("AddBill", "Home");
             }
             else
@@ -171,27 +169,25 @@ namespace BillTracker.Controllers
         [Route("/Home/EditBill/{id}")]
         public IActionResult EditBill(int id)
         {
-            
-            List<Bill> editBill = context.Bills
-         .Where(b => b.Id == id)
-         .ToList();
+           
+            Bill editBill = context.Bills.Find(id);
 
             List<Category> categories = context.Categorys
-                .Where(c => c.UserId == editBill[0].UserId)
+                .Where(c => c.UserId == editBill.UserId)
                 .ToList();
         
 
             EditBillViewModel editBillViewModel = new EditBillViewModel(
-                editBill[0].Id,
-                editBill[0].PaymentType,
-                editBill[0].DueDate,
-                editBill[0].PaidDate,
-                editBill[0].Payee,
-                editBill[0].Amount,
-                editBill[0].CategoryId,
-                editBill[0].Memo,
-                editBill[0].TaxDeductible,
-                editBill[0].UserId,
+                editBill.Id,
+                editBill.PaymentType,
+                editBill.DueDate,
+                editBill.PaidDate,
+                editBill.Payee,
+                editBill.Amount,
+                editBill.CategoryId,
+                editBill.Memo,
+                editBill.TaxDeductible,
+                editBill.UserId,
                 categories
                 );
             
@@ -216,6 +212,9 @@ namespace BillTracker.Controllers
 
                 editBillViewModel.PaymentType = upperPaymentType;
             }
+
+// If a PaidDate is entered, the PaymentType must also be entered.
+// If PaidDate is not entered, PaymentType must be blank.
             if (!(editBillViewModel.PaidDate is null))
             {
                 if (editBillViewModel.PaymentType is null)
@@ -252,17 +251,13 @@ namespace BillTracker.Controllers
                 oldBill.PaidDate = editBillViewModel.PaidDate;
                 oldBill.Payee = editBillViewModel.Payee;
                 oldBill.Memo = editBillViewModel.Memo;
-
                 oldBill.CategoryId = editBillViewModel.CategoryId;
                 oldBill.Amount = editBillViewModel.Amount;
                 oldBill.TaxDeductible = Char.ToUpper(editBillViewModel.TaxDeductible);
                 oldBill.UserId = editBillViewModel.UserId;
                 context.Bills.Update(oldBill);
-
- 
                 context.SaveChanges();
                 ViewBag.message = "";
-                editBillViewModel.CreateDropdown();
                
                 return RedirectToAction("Index", "Home");
             }
@@ -278,36 +273,29 @@ namespace BillTracker.Controllers
         [Route("/Home/DeleteBill/{id}")]
         public IActionResult DeleteBill(int id)
         {
-            List<Bill> editBill = context.Bills
-                    .Where(b => b.Id == id)
-                    .ToList();
-
-               List<Category> categories = context.Categorys
-                .Where(c => c.UserId == editBill[0].UserId)
+            Bill editBill = context.Bills.Find(id);
+// prevents error when using back arrow
+            if (editBill == null )
+            {
+                return RedirectToAction("Index", "Home");
+            }
+              List<Category> categories = context.Categorys
+                .Where(c => c.UserId == editBill.UserId)
                 .ToList();
 
-            List<Member> saveMember = context.Members
-              .Where(m => m.UserId == editBill[0].UserId)
-              .ToList();
-
             DeleteBillViewModel deleteBillViewModel = new DeleteBillViewModel(
-                editBill[0].Id,
-                editBill[0].PaymentType,
-                editBill[0].DueDate,
-                editBill[0].PaidDate,
-                editBill[0].Payee,
-                editBill[0].Amount,
-                editBill[0].CategoryId,
-                editBill[0].Memo,
-                editBill[0].TaxDeductible,
-                editBill[0].UserId,
-                saveMember[0],
+                editBill.Id,
+                editBill.PaymentType,
+                editBill.DueDate,
+                editBill.PaidDate,
+                editBill.Payee,
+                editBill.Amount,
+                editBill.CategoryId,
+                editBill.Memo,
+                editBill.TaxDeductible,
+                editBill.UserId,
                 categories
-               
                 );
-
-            ViewBag.message = "";
-            deleteBillViewModel.CreateDropdown();
 
             return View(deleteBillViewModel);
         }
